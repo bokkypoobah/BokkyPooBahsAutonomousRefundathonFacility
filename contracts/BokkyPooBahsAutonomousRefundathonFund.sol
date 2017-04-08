@@ -32,7 +32,7 @@ contract Owned {
 }
 
 
-// ERC Token Standard #20 Interface - https://github.com/ethereum/EIPs/issues/20
+// ERC Token Standard #20 - https://github.com/ethereum/EIPs/issues/20
 contract ERC20Token is Owned {
     uint256 _totalSupply = 0;
 
@@ -103,10 +103,7 @@ contract ERC20Token is Owned {
         return allowed[_owner][_spender];
     }
     
-    // Triggered when tokens are transferred.
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
-
-    // Triggered whenever approve(address _spender, uint256 _value) is called.
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 }
 
@@ -125,6 +122,12 @@ contract BokkyPooBahsAutonomousRefundathonFund is ERC20Token {
     }
 
     // Members buy tokens from this contract at this price
+    // 
+    // This is a maximum price that the tokens should be bought for buyers
+    // can always buy tokens from this contract for this price
+    // 
+    // Check out the BARF prices on https://cryptoderivatives.market/ to see
+    // if you can buy these tokens for less than this maximum price
     function buyPrice() constant returns (uint256) {
         // Members buy tokens initially at 1 BARF = 0.01 ETH 
         if (now < (deployedAt + 1 days)) {
@@ -148,6 +151,12 @@ contract BokkyPooBahsAutonomousRefundathonFund is ERC20Token {
     }
     
     // Members can always sell to the contract at 1 BARF = 0.01 ETH
+    // 
+    // This is a minimum price that the tokens should sell for as the owner of
+    // the token can always sell tokens to this contract at this price
+    // 
+    // Check out the BARF prices on https://cryptoderivatives.market/ to see
+    // if you can sell these tokens for more than this minimum price
     function sellPrice() constant returns (uint256) {
         return 10**16;
     }
