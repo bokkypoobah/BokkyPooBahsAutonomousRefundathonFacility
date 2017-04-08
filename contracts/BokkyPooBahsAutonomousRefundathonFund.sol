@@ -144,9 +144,9 @@ contract BokkyPooBahsAutonomousRefundathonFund is ERC20Token {
         // Price increase to 1 BARF = 0.08 ETH after 60 days and before 90 days
         } else if (now < (deployedAt + 90 days)) {
             return 8 * 10**16;
-        // Price increase to 1 BARF = 100 ETH after 90 days
+        // Price increase to 1 BARF = 1,000,000 ETH after 90 days
         } else {
-            return 1 * 10**20;
+            return 1 * 10**24;
         }
     }
     
