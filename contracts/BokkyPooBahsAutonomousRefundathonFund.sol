@@ -149,7 +149,7 @@ contract BokkyPooBahsAutonomousRefundathonFund is ERC20Token {
     
     // Members can always sell to the contract at 1 BARF = 0.01 ETH
     function sellPrice() constant returns (uint256) {
-        return 10 * 10**15;
+        return 10**16;
     }
 
     // ------ Owner Withdrawal ------
