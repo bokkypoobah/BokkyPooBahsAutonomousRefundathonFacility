@@ -3,10 +3,10 @@ pragma solidity ^0.4.8;
 // ----------------------------------------------------------------------------------------------
 // BokkyPooBah's Autonomous Refundathon Fund Token Contract 
 //
+// A system to incentivise The DAO token holders to withdraw their refunds
+//
 // Based on Vlad's Safe Token Sale Mechanism Contract
 // - https://medium.com/@Vlad_Zamfir/a-safe-token-sale-mechanism-8d73c430ddd1
-//
-// NOTE that this contract has not been security tested
 //
 // Enjoy. (c) Bok Consulting Pty Ltd 2017. The MIT Licence.
 // ----------------------------------------------------------------------------------------------
@@ -117,103 +117,42 @@ contract BokkyPooBahsAutonomousRefundathonFund is ERC20Token {
     string public constant symbol = "BARF";
     string public constant name = "BokkyPooBah Autonomous Refundathon Fund";
     uint8 public constant decimals = 18;
+    
+    uint256 public deployedAt;
 
-
-    /*
-    // ------ Propose and activate proposalPeriod below ------
-    uint256 public proposalPeriod = 7 days;
-    uint256 public proposedProposalPeriod;
-    uint256 public activateProposedProposalPeriodAfter;
-
-    function ownerProposeProposalPeriod(uint256 _proposedProposalPeriod) onlyOwner {
-        proposedProposalPeriod = _proposedProposalPeriod;
-        activateProposedProposalPeriodAfter = now + proposalPeriod;
-        ProposalPeriodProposed(proposedProposalPeriod, activateProposedProposalPeriodAfter);
+    function BokkyPooBahsAutonomousRefundathonFund() {
+        deployedAt = now;
     }
-    event ProposalPeriodProposed(uint256 proposedProposalPeriod, uint256 activationAfter);
-
-    function activateProposedProposalPeriod() onlyOwner {
-        if (now <= activateProposedProposalPeriodAfter) throw;
-        proposalPeriod = proposedProposalPeriod;
-        activateProposedProposalPeriodAfter = 0;
-        ProposalPeriodActivated(proposalPeriod);
-    }
-    event ProposalPeriodActivated(uint256 proposalPeriod);
-    */
 
     // Members buy tokens from this contract at this price
-    function uint256 buyPrice() {
-        return 105 * 10**16; // Starting off at 1.05 ETH per token
+    function buyPrice() constant returns (uint256) {
+        // Members buy tokens initially at 1 BARF = 0.01 ETH 
+        if (now < (deployedAt + 1 days)) {
+            return 1 * 10**16;
+        // Price increase to 1 BARF = 0.02 ETH after 1 day and before 1 week
+        } else if (now < (deployedAt + 7 days)) {
+            return 2 * 10**16;
+        // Price increase to 1 BARF = 0.04 ETH after 1 week and before 30 days
+        } else if (now < (deployedAt + 30 days)) {
+            return 4 * 10**16;
+        // Price increase to 1 BARF = 0.06 ETH after 30 days and before 60 days
+        } else if (now < (deployedAt + 60 days)) {
+            return 6 * 10**16;
+        // Price increase to 1 BARF = 0.08 ETH after 60 days and before 90 days
+        } else if (now < (deployedAt + 90 days)) {
+            return 8 * 10**16;
+        // Price increase to 1 BARF = 100 ETH after 90 days
+        } else {
+            return 1 * 10**20;
+        }
     }
     
-    // Members sell tokens to this contract at this price
-    function uint256 sellPrice() {
-        return 95 * 10**16; // Starting off at 0.95 ETH per token
-        
+    // Members can always sell to the contract at 1 BARF = 0.01 ETH
+    function sellPrice() constant returns (uint256) {
+        return 10 * 10**15;
     }
-
-
-    /*
-    // ------ Propose and activate buyPrice and sellPrice below ------
-    // Contract sells at buyPrice, members buy at buyPrice
-    // Contract buys at sellPrice, members sell at sellPrice
-    // buyPrice must be higher that sellPrice
-    uint256 public buyPrice = 105 * 10**16; // Starting off at 1.05 ETH per token
-    uint256 public sellPrice = 95 * 10**16; // Starting off at 0.95 ETH per token
-    uint256 public proposedBuyPrice;
-    uint256 public proposedSellPrice;
-    uint256 public activateProposedBuyAndSellPriceAfter;
-
-    function ownerProposeBuyAndSellPrice(
-        uint256 _proposedBuyPrice, 
-        uint256 _proposedSellPrice
-    ) onlyOwner {
-        if (_proposedBuyPrice == 0 || _proposedSellPrice == 0) throw;
-        if (_proposedBuyPrice < _proposedSellPrice) throw;
-        proposedBuyPrice = _proposedBuyPrice;
-        proposedSellPrice = _proposedSellPrice;
-        activateProposedBuyAndSellPriceAfter = now + proposalPeriod;
-        BuyAndSellPriceProposed(proposedBuyPrice, proposedSellPrice, 
-            activateProposedBuyAndSellPriceAfter);
-    }
-    event BuyAndSellPriceProposed(uint256 buyPrice, uint256 sellPrice, 
-        uint256 activationAfter);
-
-    function activateProposedBuyAndSellPrice() onlyOwner {
-        if (now < activateProposedBuyAndSellPriceAfter) throw;
-        buyPrice = proposedBuyPrice;
-        sellPrice = proposedSellPrice;
-        activateProposedBuyAndSellPriceAfter = 0;
-        BuyAndSellPriceActivated(buyPrice, sellPrice);
-    }
-    event BuyAndSellPriceActivated(uint256 buyPrice, uint256 sellPrice);
-    */
-
-    /*
-    // ------ Propose and activate buyPrice and sellPrice below ------
-    uint256 public withdrawn;
-    uint256 public proposedWithdrawal;
-    uint256 public withdrawalActiveAfter;
-
-    function ownerProposeWithdrawal(uint256 _proposedWithdrawal) onlyOwner {
-        proposedWithdrawal = _proposedWithdrawal;
-        withdrawalActiveAfter = now + proposalPeriod;
-        WithdrawalProposed(proposedWithdrawal, withdrawalActiveAfter);
-    }
-    event WithdrawalProposed(uint256 proposedWithdrawal, uint256 withdrawalActiveAfter);
-
-    function ownerWithdrawOld(uint256 amount) onlyOwner {
-        if (now < withdrawalActiveAfter) throw;
-        if ((withdrawn + amount) > proposedWithdrawal) throw;
-        withdrawn += amount;
-        if (!owner.send(amount)) throw;
-        WithdrawnOld(amount, proposedWithdrawal - withdrawn);
-    }
-    event WithdrawnOld(uint256 amount, uint256 remainingWithdrawal);
-    */
 
     // ------ Owner Withdrawal ------
-    
     function amountOfEthersOwnerCanWithdraw() constant returns (uint256) {
         uint256 etherBalance = this.balance;
         uint256 ethersSupportingTokens = _totalSupply * sellPrice() / 1 ether;
@@ -249,27 +188,11 @@ contract BokkyPooBahsAutonomousRefundathonFund is ERC20Token {
                 buyPrice());
         }
     }
-    // TODO: Remix does not handle address indexed. Add back in later
-    event MemberBoughtToken(address buyer, uint256 ethers, uint256 newEtherBalance, 
+    event MemberBoughtToken(address indexed buyer, uint256 ethers, uint256 newEtherBalance, 
         uint256 tokens, uint256 newTotalSupply, uint256 buyPrice);
 
-    function amountOfTokensMemberCanSell() constant returns (uint256) {
-        uint256 result = 0;
-        uint256 membersTokens = balances[msg.sender];
-        if (membersTokens > 0) {
-            uint256 amountOfTokensContractCanSell = this.balance * 1 ether / sellPrice();
-            if (amountOfTokensContractCanSell > membersTokens) {
-                result = membersTokens;
-            } else {
-                result = amountOfTokensContractCanSell;
-            }
-        }
-        return result;
-    }
-
     function memberSellToken(uint256 amountOfTokens) {
-        uint256 _amountOfTokensMemberCanSell = amountOfTokensMemberCanSell();
-        if (amountOfTokens > _amountOfTokensMemberCanSell) throw;
+        if (amountOfTokens > balances[msg.sender]) throw;
         balances[msg.sender] -= amountOfTokens;
         _totalSupply -= amountOfTokens;
         uint256 ethersToSend = amountOfTokens * sellPrice() / 1 ether;
@@ -277,8 +200,7 @@ contract BokkyPooBahsAutonomousRefundathonFund is ERC20Token {
         MemberSoldToken(msg.sender, ethersToSend, this.balance, amountOfTokens,
             _totalSupply, sellPrice());
     }
-    // TODO: Remix does not handle address indexed. Add back in later
-    event MemberSoldToken(address seller, uint256 ethers, uint256 newEtherBalance, 
+    event MemberSoldToken(address indexed seller, uint256 ethers, uint256 newEtherBalance, 
         uint256 tokens, uint256 newTotalSupply, uint256 sellPrice);
 
 
