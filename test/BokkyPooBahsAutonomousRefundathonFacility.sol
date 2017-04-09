@@ -117,7 +117,7 @@ contract BokkyPooBahsAutonomousRefundathonFacility is ERC20Token {
 
     uint256 public deployedAt;
 
-    function BokkyPooBahsAutonomousRefundathonFund() {
+    function BokkyPooBahsAutonomousRefundathonFacility() {
         deployedAt = now;
     }
 

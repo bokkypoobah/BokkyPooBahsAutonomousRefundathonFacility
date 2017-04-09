@@ -117,7 +117,7 @@ contract BokkyPooBahsAutonomousRefundathonFacility is ERC20Token {
 
     uint256 public deployedAt;
 
-    function BokkyPooBahsAutonomousRefundathonFund() {
+    function BokkyPooBahsAutonomousRefundathonFacility() {
         deployedAt = now;
     }
 
@@ -130,25 +130,25 @@ contract BokkyPooBahsAutonomousRefundathonFacility is ERC20Token {
     // if you can buy these tokens for less than this maximum price
     function buyPrice() constant returns (uint256) {
         // Members buy tokens initially at 1 BARF = 0.01 ETH
-        if (now < 1491721808) {
+        if (now < 1491725461) {
             return 1 * 10**16;
         // Price increase to 1 BARF = 0.02 ETH after 2 days and before 1 week
-        } else if (now < 1491721868) {
+        } else if (now < 1491725521) {
             return 2 * 10**16;
         // Price increase to 1 BARF = 0.04 ETH after 1 week and before 30 days
-        } else if (now < 1491721868) {
+        } else if (now < 1491725521) {
             return 4 * 10**16;
         // Price increase to 1 BARF = 0.06 ETH after 30 days and before 60 days
-        } else if (now < 1491721868) {
+        } else if (now < 1491725521) {
             return 6 * 10**16;
         // Price increase to 1 BARF = 0.08 ETH after 60 days and before 90 days
-        } else if (now < 1491721868) {
+        } else if (now < 1491725521) {
             return 8 * 10**16;
         // Price increase to 1 BARF = 10 ETH after 90 days and before 365 days (1 year)
-        } else if (now < 1491721868) {
+        } else if (now < 1491725521) {
             return 1 * 10**19;
         // Price increase to 1 BARF = 1,000 ETH after 365 days and before 3652 days (10 years)
-        } else if (now < 1491721928) {
+        } else if (now < 1491725581) {
             return 1 * 10**22;
         // Price increase to 1 BARF = 1,000,000 ETH after 3652 days (10 years). Effectively free floating ceiling
         } else {
