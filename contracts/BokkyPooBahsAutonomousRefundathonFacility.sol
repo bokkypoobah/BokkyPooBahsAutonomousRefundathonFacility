@@ -1,7 +1,7 @@
 pragma solidity ^0.4.8;
 
 // ----------------------------------------------------------------------------------------------
-// BokkyPooBah's Autonomous Refundathon Fund Token Contract 
+// BokkyPooBah's Autonomous Refundathon Facility Token Contract
 //
 // A system to incentivise The DAO token holders to withdraw their refunds
 //
@@ -54,7 +54,7 @@ contract ERC20Token is Owned {
 
     // Send _value amount of tokens to address _to
     function transfer(address _to, uint256 _amount) returns (bool success) {
-        if (balances[msg.sender] >= _amount 
+        if (balances[msg.sender] >= _amount
             && _amount > 0
             && balances[_to] + _amount > balances[_to]) {
             balances[msg.sender] -= _amount;
@@ -75,7 +75,7 @@ contract ERC20Token is Owned {
         return true;
     }
 
-    // Spender of tokens transfer an amount of tokens from the token owner's 
+    // Spender of tokens transfer an amount of tokens from the token owner's
     // balance to the spender's account. The owner of the tokens must already
     // have approve(...)-d this transfer
     function transferFrom(
@@ -102,19 +102,19 @@ contract ERC20Token is Owned {
     function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
         return allowed[_owner][_spender];
     }
-    
+
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 }
 
 
-contract BokkyPooBahsAutonomousRefundathonFund is ERC20Token {
+contract BokkyPooBahsAutonomousRefundathonFacility is ERC20Token {
 
     // ------ Token information ------
     string public constant symbol = "BARF";
     string public constant name = "BokkyPooBah Autonomous Refundathon Fund";
     uint8 public constant decimals = 18;
-    
+
     uint256 public deployedAt;
 
     function BokkyPooBahsAutonomousRefundathonFund() {
@@ -122,14 +122,14 @@ contract BokkyPooBahsAutonomousRefundathonFund is ERC20Token {
     }
 
     // Members buy tokens from this contract at this price
-    // 
+    //
     // This is a maximum price that the tokens should be bought for buyers
     // can always buy tokens from this contract for this price
-    // 
+    //
     // Check out the BARF prices on https://cryptoderivatives.market/ to see
     // if you can buy these tokens for less than this maximum price
     function buyPrice() constant returns (uint256) {
-        // Members buy tokens initially at 1 BARF = 0.01 ETH 
+        // Members buy tokens initially at 1 BARF = 0.01 ETH
         if (now < (deployedAt + 1 days)) {
             return 1 * 10**16;
         // Price increase to 1 BARF = 0.02 ETH after 1 day and before 1 week
@@ -155,12 +155,12 @@ contract BokkyPooBahsAutonomousRefundathonFund is ERC20Token {
             return 1 * 10**24;
         }
     }
-    
+
     // Members can always sell to the contract at 1 BARF = 0.01 ETH
-    // 
+    //
     // This is a minimum price that the tokens should sell for as the owner of
     // the token can always sell tokens to this contract at this price
-    // 
+    //
     // Check out the BARF prices on https://cryptoderivatives.market/ to see
     // if you can sell these tokens for more than this minimum price
     function sellPrice() constant returns (uint256) {
@@ -177,7 +177,7 @@ contract BokkyPooBahsAutonomousRefundathonFund is ERC20Token {
             return 0;
         }
     }
-    
+
     function ownerWithdraw(uint256 amount) onlyOwner {
         uint256 maxWithdrawalAmount = amountOfEthersOwnerCanWithdraw();
         if (amount > maxWithdrawalAmount) {
@@ -187,23 +187,23 @@ contract BokkyPooBahsAutonomousRefundathonFund is ERC20Token {
         Withdrawn(amount, maxWithdrawalAmount - amount);
     }
     event Withdrawn(uint256 amount, uint256 remainingWithdrawal);
-    
-    
+
+
     // ------ Member Buy and Sell tokens below ------
     function () payable {
-        memberBuyToken();    
+        memberBuyToken();
     }
 
     function memberBuyToken() payable {
         if (msg.value > 0) {
-            uint tokens = msg.value * buyPrice() / 1 ether;
+            uint tokens = msg.value * 1 ether / buyPrice();
             _totalSupply += tokens;
             balances[msg.sender] += tokens;
             MemberBoughtToken(msg.sender, msg.value, this.balance, tokens, _totalSupply,
                 buyPrice());
         }
     }
-    event MemberBoughtToken(address indexed buyer, uint256 ethers, uint256 newEtherBalance, 
+    event MemberBoughtToken(address indexed buyer, uint256 ethers, uint256 newEtherBalance,
         uint256 tokens, uint256 newTotalSupply, uint256 buyPrice);
 
     function memberSellToken(uint256 amountOfTokens) {
@@ -215,7 +215,7 @@ contract BokkyPooBahsAutonomousRefundathonFund is ERC20Token {
         MemberSoldToken(msg.sender, ethersToSend, this.balance, amountOfTokens,
             _totalSupply, sellPrice());
     }
-    event MemberSoldToken(address indexed seller, uint256 ethers, uint256 newEtherBalance, 
+    event MemberSoldToken(address indexed seller, uint256 ethers, uint256 newEtherBalance,
         uint256 tokens, uint256 newTotalSupply, uint256 sellPrice);
 
 
